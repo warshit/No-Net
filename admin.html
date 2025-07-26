@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin - Nonet</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #ece5dd;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    .admin-container {
+      max-width: 400px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+      padding: 32px 28px 24px 28px;
+    }
+    h2, h3 {
+      color: #075e54;
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+    form {
+      margin-bottom: 28px;
+      background: #f7f7f7;
+      border-radius: 8px;
+      padding: 18px 14px 10px 14px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    label {
+      font-size: 1rem;
+      color: #333;
+      margin-bottom: 6px;
+      display: block;
+      font-weight: 500;
+    }
+    input[type="text"], input[type="file"], select {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      background: #fff;
+      transition: border 0.2s;
+      box-sizing: border-box;
+    }
+    input[type="text"]:focus, select:focus {
+      border: 1.5px solid #075e54;
+      outline: none;
+    }
+    button {
+      background: #25d366;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: 10px 0;
+      width: 100%;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 4px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    button:hover {
+      background: #128c7e;
+    }
+    @media (max-width: 500px) {
+      .admin-container {
+        max-width: 98vw;
+        padding: 16px 4vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <h2>Send Message to Group</h2>
+    <form onsubmit="sendMessage(event)">
+      <label for="group">Select Group</label>
+      <select id="group">
+        <option value="groupA">Group A</option>
+      </select>
+      <label for="msg">Message</label>
+      <input type="text" id="msg" placeholder="Type your message" required>
+      <button type="submit">Send Message</button>
+    </form>
+
+    <h3>Upload File to Group</h3>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <label for="file">Choose File</label>
+      <input type="file" name="file" id="file" required>
+      <label for="groupUpload">Select Group</label>
+      <select name="group" id="groupUpload">
+        <option value="groupA">Group A</option>
+      </select>
+      <button type="submit">Upload File</button>
+    </form>
+  </div>
+  <script>
+    async function sendMessage(e) {
+      e.preventDefault();
+      const group = document.getElementById('group').value;
+      const message = document.getElementById('msg').value;
+
+      const res = await fetch('/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ group, message })
+      });
+
+      const result = await res.text();
+      alert(result);
+      document.getElementById('msg').value = '';
+    }
+
+    document.getElementById('uploadForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const res = await fetch('/upload', {
+        method: 'POST',
+        body: formData
+      });
+      alert(await res.text());
+      e.target.reset();
+    };
+  </script>
+</body>
+</html>
